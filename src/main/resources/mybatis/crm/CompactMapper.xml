@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.crm.compact.mapper.CompactMapper">
+    
+    <resultMap type="Compact" id="CompactResult">
+        <result property="compactId"    column="compact_id"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="busId"    column="bus_id"    />
+        <result property="compact"    column="compact"    />
+        <result property="compactTime"    column="compact_time"    />
+        <result property="partyA"    column="party_a"    />
+        <result property="partyB"    column="party_b"    />
+        <result property="text"    column="text"    />
+    </resultMap>
+
+    <sql id="selectCompactVo">
+        select compact_id, customer_id, bus_id, compact, compact_time, party_a, party_b, text from crm_compact
+    </sql>
+
+    <select id="selectCompactList" parameterType="Compact" resultMap="CompactResult">
+        <include refid="selectCompactVo"/>
+        <where>  
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="busId != null "> and bus_id = #{busId}</if>
+            <if test="compact != null "> and compact = #{compact}</if>
+            <if test="compactTime != null "> and compact_time = #{compactTime}</if>
+            <if test="partyA != null  and partyA != ''"> and party_a = #{partyA}</if>
+            <if test="partyB != null  and partyB != ''"> and party_b = #{partyB}</if>
+            <if test="text != null  and text != ''"> and text = #{text}</if>
+
+            <if test="params.beginCompactTime != null and params.beginCompactTime != ''"><!-- 开始时间检索 -->
+                AND date_format(compact_time,'%y%m%d') &gt;= date_format(#{params.beginCompactTime},'%y%m%d')
+            </if>
+            <if test="params.endCompactTime != null and params.endCompactTime != ''"><!-- 结束时间检索 -->
+                AND date_format(compact_time,'%y%m%d') &lt;= date_format(#{params.endCompactTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectCompactById" parameterType="Long" resultMap="CompactResult">
+        <include refid="selectCompactVo"/>
+        where compact_id = #{compactId}
+    </select>
+        
+    <insert id="insertCompact" parameterType="Compact" useGeneratedKeys="true" keyProperty="compactId">
+        insert into crm_compact
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerId != null ">customer_id,</if>
+            <if test="busId != null ">bus_id,</if>
+            <if test="compact != null ">compact,</if>
+            <if test="compactTime != null ">compact_time,</if>
+            <if test="partyA != null  and partyA != ''">party_a,</if>
+            <if test="partyB != null  and partyB != ''">party_b,</if>
+            <if test="text != null  and text != ''">text,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerId != null ">#{customerId},</if>
+            <if test="busId != null ">#{busId},</if>
+            <if test="compact != null ">#{compact},</if>
+            <if test="compactTime != null ">#{compactTime},</if>
+            <if test="partyA != null  and partyA != ''">#{partyA},</if>
+            <if test="partyB != null  and partyB != ''">#{partyB},</if>
+            <if test="text != null  and text != ''">#{text},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCompact" parameterType="Compact">
+        update crm_compact
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerId != null ">customer_id = #{customerId},</if>
+            <if test="busId != null ">bus_id = #{busId},</if>
+            <if test="compact != null ">compact = #{compact},</if>
+            <if test="compactTime != null ">compact_time = #{compactTime},</if>
+            <if test="partyA != null  and partyA != ''">party_a = #{partyA},</if>
+            <if test="partyB != null  and partyB != ''">party_b = #{partyB},</if>
+            <if test="text != null  and text != ''">text = #{text},</if>
+        </trim>
+        where compact_id = #{compactId}
+    </update>
+
+    <delete id="deleteCompactById" parameterType="Long">
+        delete from crm_compact left join where compact_id = #{compactId}
+    </delete>
+
+    <delete id="deleteCompactByIds" parameterType="String">
+        delete from crm_compact where compact_id in 
+        <foreach item="compactId" collection="array" open="(" separator="," close=")">
+            #{compactId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteCompactByCus" parameterType="Long">
+        delete from crm_compact where customer_id=#{customer_id}
+    </delete>
+
+    <delete id="deleteCompactByBus" parameterType="Long">
+        delete from crm_compact where bus_id=#{bus_id}
+    </delete>
+
+    <delete id="deleteCompactByCust" parameterType="Long">
+        delete from crm_compact where bus_id in (select bus_id from crm_business_info where cid=cid )
+    </delete>
+
+</mapper>

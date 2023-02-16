@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('合同列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>客户ID：</label>
+                                <select id="cid"  name="cid" >
+                                    <option value="">请选择客户ID</option>
+                                    <option th:each="customer:${application.customerList}" th:value="${customer.cid}" th:text="${customer.cid}" ></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>商业ID：</label>
+                                <select id="busId" name="busId">
+                                    <option value="">请选择商业信息</option>
+                                    <option th:each="BusinessInfo:${application.BusinessInfoList}" th:value="${BusinessInfo.busId}" th:text="${BusinessInfo.name}" ></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>合同编号：</label>
+                                <input type="text" name="compact"number="true" rangelength="[4,8]"/>
+                            </li>
+                            <li class="select-time">
+                                <label>合同时间：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginCompactTime]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endCompactTime]"/>
+                            </li>
+                            <li>
+                                <label>甲方：</label>
+                                <input type="text" name="partyA"/>
+                            </li>
+                            <li>
+                                <label>乙方：</label>
+                                <input type="text" name="partyB"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="crm:compact:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="crm:compact:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="crm:compact:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="crm:compact:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('crm:compact:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('crm:compact:remove')}]];
+        var prefix = ctx + "crm/compact";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "合同",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'compactId', 
+                    title: '合同ID',
+                   /* visible: false*/
+                },
+                {
+                    field: 'customerId', 
+                    title: '客户ID'
+                },
+                {
+                    field: 'busId', 
+                    title: '商业信息',
+                    formatter:function(value,row,index){
+                        var BusinessInfoList= [[${application.BusinessInfoList}]];
+                        BusinessInfoList.forEach(function (data) {
+                            if(data.busId==value){
+                                value=data.name;
+                            }
+                        });
+                        return value;
+                    },
+                },
+                {
+                    field: 'compact', 
+                    title: '合同编号'
+                },
+                {
+                    field: 'compactTime', 
+                    title: '合同时间',
+                    formatter: function (value, row, index) {
+                        if(value)
+                            return value.substring(0, 10);
+                        return value
+                    }
+                },
+                {
+                    field: 'partyA', 
+                    title: '甲方'
+                },
+                {
+                    field: 'partyB', 
+                    title: '乙方'
+                },
+                {
+                    field: 'text', 
+                    title: '合同内容'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.compactId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.compactId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

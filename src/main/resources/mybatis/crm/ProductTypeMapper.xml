@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.crm.type.mapper.ProductTypeMapper">
+    
+    <resultMap type="ProductType" id="ProductTypeResult">
+        <result property="productTypeId"    column="product_type_id"    />
+        <result property="name"    column="name"    />
+        <result property="prodType"    column="prod_type"    />
+        <result property="productFeature"    column="product_feature"    />
+    </resultMap>
+
+    <sql id="selectProductTypeVo">
+        select product_type_id, name, prod_type, product_feature from crm_product_type
+    </sql>
+
+    <select id="selectProductTypeList" parameterType="ProductType" resultMap="ProductTypeResult">
+        <include refid="selectProductTypeVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="prodType != null  and prodType != ''"> and prod_type = #{prodType}</if>
+            <if test="productFeature != null  and productFeature != ''"> and product_feature = #{productFeature}</if>
+        </where>
+    </select>
+    
+    <select id="selectProductTypeById" parameterType="Long" resultMap="ProductTypeResult">
+        <include refid="selectProductTypeVo"/>
+        where product_type_id = #{productTypeId}
+    </select>
+        
+    <insert id="insertProductType" parameterType="ProductType" useGeneratedKeys="true" keyProperty="productTypeId">
+        insert into crm_product_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">name,</if>
+            <if test="prodType != null  and prodType != ''">prod_type,</if>
+            <if test="productFeature != null  and productFeature != ''">product_feature,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="prodType != null  and prodType != ''">#{prodType},</if>
+            <if test="productFeature != null  and productFeature != ''">#{productFeature},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProductType" parameterType="ProductType">
+        update crm_product_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="prodType != null  and prodType != ''">prod_type = #{prodType},</if>
+            <if test="productFeature != null  and productFeature != ''">product_feature = #{productFeature},</if>
+        </trim>
+        where product_type_id = #{productTypeId}
+    </update>
+
+    <delete id="deleteProductTypeById" parameterType="Long">
+        delete from crm_product_type where product_type_id = #{productTypeId}
+    </delete>
+
+    <delete id="deleteProductTypeByIds" parameterType="String">
+        delete from crm_product_type where product_type_id in 
+        <foreach item="productTypeId" collection="array" open="(" separator="," close=")">
+            #{productTypeId}
+        </foreach>
+    </delete>
+    
+</mapper>

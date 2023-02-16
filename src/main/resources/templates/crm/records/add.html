@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增跟进记录')" />
+    <th:block th:include="include :: bootstrap-select-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-records-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">商业信息：</label>
+                <div class="col-sm-8">
+                    <select id="busId" class="form-control m-b selectpicker " name="busId">
+                        <option value="">请选择商业信息</option>
+                        <option th:each="BusinessInfo:${application.BusinessInfoList}" th:value="${BusinessInfo.busId}" th:text="${BusinessInfo.name}" ></option>
+                    </select>
+                </div>
+            </div>
+ <!--           <div class="form-group">
+                <label class="col-sm-3 control-label">用户ID：</label>
+                <div class="col-sm-8">
+                    <input name="uid" class="form-control" type="text">
+                </div>
+            </div>-->
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">跟进方式：</label>
+                <div class="col-sm-8">
+                    <select name="method" class="form-control  m-b selectpicker" th:with="type=${@dict.getType('crm_recordsMethod_list')}" >
+                        <option value="">请选择跟进方式</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">记录内容：</label>
+                <div class="col-sm-8">
+                    <input name="content" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <input name="comment" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: bootstrap-select-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "crm/records"
+        $("#form-records-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-records-add').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('客户(企业，组织或个人)列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+       <!--                     <li>
+                                <label>用户_id：</label>
+                                <input type="text" name="uid"/>
+                            </li>-->
+                            <li>
+                                <label>姓名：</label>
+                                <input type="text" name="name"/>
+                            </li>
+                            <li>
+                                <label>国家：</label>
+                                <input type="text" name="country"/>
+                            </li>
+                            <li>
+                                <label>客户地址：</label>
+                                <input type="text" name="address"/>
+                            </li>
+                            <li>
+                                <label>url：</label>
+                                <input type="text" name="url"/>
+                            </li>
+                            <li>
+                                <label>电子邮箱：</label>
+                                <input type="text" name="email"/>
+                            </li>
+                            <li>
+                                <label>电话：</label>
+                                <input type="text" name="phone"/>
+                            </li>
+                            <li>
+                                <label>传真：</label>
+                                <input type="text" name="fax"/>
+                            </li>
+                            <li>
+                                <label>其它联系方式：</label>
+                                <input type="text" name="other"/>
+                            </li>
+                            <li>
+                                <label>行业：</label>
+                                <input type="text" name="industry"/>
+                            </li>
+                            <li>
+                                <label>年营业额：</label>
+                                <input type="text" name="annualRevenue"/>
+                            </li>
+                            <li>
+                                <label>开户银行：</label>
+                                <input type="text" name="bankOfDeposit"/>
+                            </li>
+                            <li>
+                                <label>银行帐号：</label>
+                                <input type="text" name="bankAccount"/>
+                            </li>
+                            <li class="select-time">
+                                <label>最近跟进时间：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginLastTime]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endLastTime]"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="crm:customer:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="crm:customer:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="crm:customer:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="crm:customer:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('crm:customer:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('crm:customer:remove')}]];
+        var prefix = ctx + "crm/customer";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "客户(企业，组织或个人)",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'cid', 
+                    title: '客户id',
+                    /*visible: false*/
+                },
+/*                {
+                    field: 'uid', 
+                    title: '用户_id'
+                },*/
+                {
+                    field: 'name',
+                    title: '姓名'
+                },
+                {
+                    field: 'country', 
+                    title: '国家'
+                },
+                {
+                    field: 'address', 
+                    title: '客户地址'
+                },
+                {
+                    field: 'url', 
+                    title: 'url'
+                },
+                {
+                    field: 'email', 
+                    title: '电子邮箱'
+                },
+                {
+                    field: 'phone', 
+                    title: '电话'
+                },
+                {
+                    field: 'fax', 
+                    title: '传真'
+                },
+                {
+                    field: 'other', 
+                    title: '其它联系方式'
+                },
+                {
+                    field: 'industry', 
+                    title: '行业'
+                },
+                {
+                    field: 'annualRevenue', 
+                    title: '年营业额',
+                    formatter: function (value, row, index) {
+                        return value+"￥";}
+
+                },
+                {
+                    field: 'bankOfDeposit', 
+                    title: '开户银行'
+                },
+                {
+                    field: 'bankAccount', 
+                    title: '银行帐号'
+                },
+                {
+                    field: 'lastTime', 
+                    title: '最近跟进时间',
+                    /*formatter: function (value, row, index) {
+                        return value.substring(0, 10);}*/
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.cid + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.cid + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

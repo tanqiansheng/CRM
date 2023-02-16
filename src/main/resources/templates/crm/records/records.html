@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('跟进记录列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>商业信息：</label>
+                                <select name="busId" >
+                                    <option value="">请选择商业信息</option>
+                                    <option th:each="BusinessInfo:${application.BusinessInfoList}" th:value="${BusinessInfo.busId}" th:text="${BusinessInfo.name}" ></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>跟进方式：</label>
+                                <select name="method"  th:with="type=${@dict.getType('crm_recordsMethod_list')}" >
+                                    <option value="">请选择跟进方式</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>记录内容：</label>
+                                <input type="text" name="content"/>
+                            </li>
+                            <li>
+                                <label>备注：</label>
+                                <input type="text" name="comment"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="crm:records:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="crm:records:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="crm:records:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="crm:records:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('crm:records:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('crm:records:remove')}]];
+        var prefix = ctx + "crm/records";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "跟进记录",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'recordsId', 
+                    title: '记录ID',
+                   /* visible: false*/
+                },
+                {
+                    field: 'busId', 
+                    title: '商业信息',
+                    formatter:function(value,row,index){
+                    var BusinessInfoList= [[${application.BusinessInfoList}]];
+                    BusinessInfoList.forEach(function (data) {
+                    if(data.busId==value){
+                        value=data.name;
+                    }
+                });
+                return value;
+        },
+                },
+          /*      {
+                    field: 'uid',
+                    title: '用户ID'
+                },*/
+                {
+                    field: 'method', 
+                    title: '跟进方式',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel([[${@dict.getType('crm_recordsMethod_list')}]], value);
+                    }
+                },
+                {
+                    field: 'content', 
+                    title: '记录内容'
+                },
+                {
+                    field: 'comment', 
+                    title: '备注'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.recordsId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.recordsId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('商业信息列表')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>客户ID：</label>
+                                <select id="cid"  name="cid" >
+                                    <option value="">请选择客户ID</option>
+                                    <option th:each="customer:${application.customerList}" th:value="${customer.cid}" th:text="${customer.cid}" ></option>
+                                </select>
+                            </li>
+            <!--                <li>
+                                <label>用户ID：</label>
+                                <input type="text" name="uid"/>
+                            </li>-->
+                            <li>
+                                <label>名称：</label>
+                                <input type="text" name="name"/>
+                            </li>
+                            <li>
+                                <label>营销方式：</label>
+                                <select name="marketingMode" th:with=" type=${@dict.getType('crm_marketingMode_list')}">
+                                    <option value="">请选择营销方式</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>价值：</label>
+                                <input type="text" name="value" number="true" digits="true"/>
+                            </li>
+                            <li>
+                                <label>产品总数：</label>
+                                <input type="text" name="totalAmount" number="true" digits="true"/>
+                            </li>
+                            <li class="select-time">
+                                <label>预计成交日期：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginDueDate]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endDueDate]"/>
+                            </li>
+                            <li class="select-time">
+                                <label>实际交付日期：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginPracticalDate]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endPracticalDate]"/>
+                            </li>
+                            <li class="select-time">
+                                <label>商机创建时间：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginCreateDate]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endCreateDate]"/>
+                            </li>
+                            <li class="select-time">
+                                <label>修改时间：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginUpdateDate]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endUpdateDate]"/>
+                            </li>
+                            <li>
+                                <label>商业金额：</label>
+                                <input type="text" name="totalPrice" number="true" digits="true"/>
+                            </li>
+                            <li>
+                                <label>备注：</label>
+                                <input type="text" name="comment"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="crm:info:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="crm:info:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="crm:info:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="crm:info:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+     <th:block th:include="include :: bootstrap-select-js" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('crm:info:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('crm:info:remove')}]];
+        var prefix = ctx + "crm/info";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "商业信息",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'busId', 
+                    title: '商业信息ID',
+                  /*  visible: false*/
+                },
+                {
+                    field: 'cid', 
+                    title: '客户id'
+                },
+     /*           {
+                    field: 'uid',
+                    title: '用户id'
+                },*/
+                {
+                    field: 'name', 
+                    title: '名称'
+                },
+                {
+                    field: 'marketingMode', 
+                    title: '营销方式',
+                },
+                {
+                    field: 'value', 
+                    title: '价值'
+                },
+                {
+                    field: 'totalAmount', 
+                    title: '产品总数'
+                },
+                {
+                    field: 'dueDate', 
+                    title: '预计成交日期',
+                    formatter: function (value, row, index) {
+                        if(value)
+                            return value.substring(0, 10);
+                        return value
+                    }
+                },
+                {
+                    field: 'practicalDate', 
+                    title: '实际交付日期',
+                    formatter: function (value, row, index) {
+                        if(value)
+                            return value.substring(0, 10);
+                        return value
+                    }
+                },
+                {
+                    field: 'createDate', 
+                    title: '商机创建时间',
+                    formatter: function (value, row, index) {
+                        if(value)
+                            return value.substring(0, 10);
+                        return value
+                    }
+                },
+                {
+                    field: 'updateDate', 
+                    title: '修改时间',
+                    formatter: function (value, row, index) {
+                        if(value)
+                            return value.substring(0, 10);
+                        return value
+                    }
+                },
+                {
+                    field: 'totalPrice', 
+                    title: '商业金额',
+                    formatter: function (value, row, index) {
+                        return value+"$";
+                    }
+                },
+                {
+                    field: 'comment', 
+                    title: '备注'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.busId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.busId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.crm.records.mapper.FollowUpRecordsMapper">
+    
+    <resultMap type="FollowUpRecords" id="FollowUpRecordsResult">
+        <result property="recordsId"    column="records_id"    />
+        <result property="busId"    column="bus_id"    />
+        <result property="uid"    column="uid"    />
+        <result property="method"    column="method"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="content"    column="content"    />
+        <result property="comment"    column="comment"    />
+    </resultMap>
+
+    <sql id="selectFollowUpRecordsVo">
+        select records_id, bus_id, uid, method, create_time, content, comment from crm_follow_up_records
+    </sql>
+
+    <select id="selectFollowUpRecordsList" parameterType="FollowUpRecords" resultMap="FollowUpRecordsResult">
+        <include refid="selectFollowUpRecordsVo"/>
+        <where>  
+            <if test="busId != null "> and bus_id = #{busId}</if>
+            <if test="uid != null "> and uid = #{uid}</if>
+            <if test="method != null "> and method = #{method}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="comment != null  and comment != ''"> and comment = #{comment}</if>
+        </where>
+    </select>
+    
+    <select id="selectFollowUpRecordsById" parameterType="Long" resultMap="FollowUpRecordsResult">
+        <include refid="selectFollowUpRecordsVo"/>
+        where records_id = #{recordsId}
+    </select>
+        
+    <insert id="insertFollowUpRecords" parameterType="FollowUpRecords" useGeneratedKeys="true" keyProperty="recordsId">
+        insert into crm_follow_up_records
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="busId != null ">bus_id,</if>
+            <if test="uid != null ">uid,</if>
+            <if test="method != null ">method,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="content != null  and content != ''">content,</if>
+            <if test="comment != null  and comment != ''">comment,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="busId != null ">#{busId},</if>
+            <if test="uid != null ">#{uid},</if>
+            <if test="method != null ">#{method},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="content != null  and content != ''">#{content},</if>
+            <if test="comment != null  and comment != ''">#{comment},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFollowUpRecords" parameterType="FollowUpRecords">
+        update crm_follow_up_records
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="busId != null ">bus_id = #{busId},</if>
+            <if test="uid != null ">uid = #{uid},</if>
+            <if test="method != null ">method = #{method},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="content != null  and content != ''">content = #{content},</if>
+            <if test="comment != null  and comment != ''">comment = #{comment},</if>
+        </trim>
+        where records_id = #{recordsId}
+    </update>
+
+    <delete id="deleteFollowUpRecordsById" parameterType="Long">
+        delete from crm_follow_up_records where records_id = #{recordsId}
+    </delete>
+
+    <delete id="deleteFollowUpRecordsByIds" parameterType="String">
+        delete from crm_follow_up_records where records_id in 
+        <foreach item="recordsId" collection="array" open="(" separator="," close=")">
+            #{recordsId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteFollowUpRecordsByBus" parameterType="Long">
+        delete from crm_follow_up_records where bus_id = #{bus_id}
+    </delete>
+
+    <delete id="deleteFollowUpRecordsByCust" parameterType="Long">
+        delete from crm_follow_up_records where bus_id in (select bus_id from crm_business_info where cid=#{cid})
+    </delete>
+</mapper>

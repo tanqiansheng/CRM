@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('产品列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>合同ID：</label>
+                                <select name="compactId" >
+                                    <option value="">请选择合同ID</option>
+                                    <option th:each="compact:${application.compactList}" th:value="${compact.compactId}" th:text="${compact.compactId}" ></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>产品类型：</label>
+                                <select id="post" >
+                                    <option value="" name="productTypeId">请选择产品类型</option>
+                                    <option th:each="type:${application.typeList}" th:value="${type.productTypeId}" th:text="${type.name}" ></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>产品SN：</label>
+                                <input type="text" name="sn" number="true" digits="true" maxlength="20"/>
+                            </li>
+                            <li class="select-time">
+                                <label>生产日期：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginProductDate]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endProductDate]"/>
+                            </li>
+                            <li class="select-time">
+                                <label>出厂日期：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginProductionDate]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endProductionDate]"/>
+                            </li>
+                            <li>
+                                <label>备注：</label>
+                                <input type="text" name="comment"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="crm:product:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="crm:product:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="crm:product:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="crm:product:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('crm:product:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('crm:product:remove')}]];
+        var prefix = ctx + "crm/product";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "产品",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'productId', 
+                    title: '产品ID',
+                   /* visible: false*/
+                },
+                {
+                    field: 'compactId', 
+                    title: '合同ID'
+                },
+                {
+                    field: 'productTypeId', 
+                    title: '产品类型',
+                    formatter:function(value,row,index){
+                        var typeList= [[${application.typeList}]];
+                        typeList.forEach(function (data) {
+                            if(data.productTypeId==value){
+                                value=data.name;
+                            }
+                        });
+                        return value;
+                    }
+                },
+                {
+                    field: 'sn', 
+                    title: '产品SN'
+                },
+                {
+                    field: 'productDate', 
+                    title: '生产日期',
+                    formatter: function (value, row, index) {
+                        if(value)
+                            return value.substring(0, 10);
+                        return value
+                    }
+                },
+                {
+                    field: 'productionDate', 
+                    title: '出厂日期',
+                    formatter: function (value, row, index) {
+                        if(value)
+                            return value.substring(0, 10);
+                        return value
+                    }
+                },
+                {
+                    field: 'comment', 
+                    title: '备注'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.productId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.productId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

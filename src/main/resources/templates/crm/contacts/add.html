@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增联系人')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: bootstrap-select-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-contacts-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">客户ID：</label>
+                <div class="col-sm-8">
+                    <select id="cid" class="form-control m-b selectpicker "  name="cid" >
+                        <option value="">请选择客户ID</option>
+                        <option th:each="customer:${application.customerList}" th:value="${customer.cid}" th:text="${customer.cid}" ></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">商业ID：</label>
+                <div class="col-sm-8">
+                    <select id="busId" class="form-control m-b selectpicker "  name="busId">
+                        <option value="">请选择商业信息</option>
+                        <option th:each="BusinessInfo:${application.BusinessInfoList}" th:value="${BusinessInfo.busId}" th:text="${BusinessInfo.name}" ></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">联系人姓名：</label>
+                <div class="col-sm-8">
+                    <input name="name" class="form-control" type="text" isName="true">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">生日：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="birthday" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">联系人岗位：</label>
+                <div class="col-sm-8">
+                    <select id="post" class="form-control m-b selectpicker " >
+                        <option value="">请选联系人岗位</option>  
+                        <option th:each="post:${application.postList}" th:value="${post.postId}" th:text="${post.postName}" ></option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">联系人部门：</label>
+                <div class="col-sm-8">
+                    <select id="post" class="form-control m-b selectpicker " >
+                        <option value="">请选联系人部门</option>
+                        <option th:each="dept:${application.deptList}" th:value="${dept.deptId}" th:text="${dept.deptName}" ></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">联系人性别：</label>
+                <div class="col-sm-8">
+                    <option value="">请选择联系人性别</option>
+                        <select name="sex" class="form-control  m-b selectpicker" th:with="type=${@dict.getType('sys_user_sex')}" >
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                        </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">联系人称呼：</label>
+                <div class="col-sm-8">
+                    <input name="saltName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">移动电话1：</label>
+                <div class="col-sm-8">
+                    <input name="mobilePhone1" class="form-control" type="text" isPhone="true" >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">移动电话2：</label>
+                <div class="col-sm-8">
+                    <input name="mobilePhone2" class="form-control" type="text" isPhone="true">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">办公电话：</label>
+                <div class="col-sm-8">
+                    <input name="workPhone" class="form-control" type="text" isTel="true">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">微信：</label>
+                <div class="col-sm-8">
+                    <input name="wx" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">qq号：</label>
+                <div class="col-sm-8">
+                    <input name="qq" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">邮箱：</label>
+                <div class="col-sm-8">
+                    <input name="email" class="form-control" type="text"  email="true">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">地址：</label>
+                <div class="col-sm-8">
+                    <input name="address" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">邮编：</label>
+                <div class="col-sm-8">
+                    <input name="zipCode" class="form-control" type="text" number="true" rangelength="[4,8]">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">联系人信息备注：</label>
+                <div class="col-sm-8">
+                    <input name="description" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: bootstrap-select-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "crm/contacts"
+        $("#form-contacts-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-contacts-add').serialize());
+            }
+        }
+
+        $("input[name='birthday']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

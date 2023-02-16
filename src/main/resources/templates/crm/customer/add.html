@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增客户(企业，组织或个人)')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-customer-add">
+<!--            <div class="form-group">
+                <label class="col-sm-3 control-label">用户ID：</label>
+                <div class="col-sm-8">
+                    <input name="uid" class="form-control" type="text">
+                </div>
+            </div>-->
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">姓名：</label>
+                <div class="col-sm-8">
+                    <input name="name" class="form-control" type="text" isName="true">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">国家：</label>
+                <div class="col-sm-8">
+                    <input name="country" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">客户地址：</label>
+                <div class="col-sm-8">
+                    <input name="address" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">url：</label>
+                <div class="col-sm-8">
+                    <input name="url" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">电子邮箱：</label>
+                <div class="col-sm-8">
+                    <input name="email" class="form-control" email="true">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">电话：</label>
+                <div class="col-sm-8">
+                    <input name="phone" class="form-control" type="text" isTel="true">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label" >传真：</label>
+                <div class="col-sm-8">
+                    <input name="fax" class="form-control" type="text" number="true" digits="true" maxlength="11">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">其它联系方式：</label>
+                <div class="col-sm-8">
+                    <input name="other" class="form-control" type="text" isPhone="true">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">行业：</label>
+                <div class="col-sm-8">
+                    <input name="industry" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label" >年营业额：</label>
+                <div class="col-sm-8">
+                    <input name="annualRevenue" class="form-control" type="text" number="true" digits="true">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">开户银行：</label>
+                <div class="col-sm-8">
+                    <input name="bankOfDeposit" class="form-control" type="text" >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label" creditcard="true"   >银行帐号：</label>
+                <div class="col-sm-8">
+                    <input name="bankAccount" class="form-control" type="text"  number="true" rangelength="[11,20]">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">最近跟进时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="lastTime" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "crm/customer"
+        $("#form-customer-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-customer-add').serialize());
+            }
+        }
+
+        $("input[name='lastTime']").datetimepicker({
+            minView: 0,
+            format: "yyyy-mm-dd hh:ii:ss",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

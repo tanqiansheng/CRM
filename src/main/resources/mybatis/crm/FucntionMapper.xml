@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.crm.fucntion.mapper.FucntionMapper">
+    
+    <resultMap type="Fucntion" id="FucntionResult">
+        <result property="fucntionId"    column="fucntion_id"    />
+        <result property="name"    column="name"    />
+        <result property="url"    column="url"    />
+    </resultMap>
+
+    <sql id="selectFucntionVo">
+        select fucntion_id, name, url from crm_fucntion
+    </sql>
+
+    <select id="selectFucntionList" parameterType="Fucntion" resultMap="FucntionResult">
+        <include refid="selectFucntionVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="url != null  and url != ''"> and url = #{url}</if>
+        </where>
+    </select>
+    
+    <select id="selectFucntionById" parameterType="Long" resultMap="FucntionResult">
+        <include refid="selectFucntionVo"/>
+        where fucntion_id = #{fucntionId}
+    </select>
+        
+    <insert id="insertFucntion" parameterType="Fucntion" useGeneratedKeys="true" keyProperty="fucntionId">
+        insert into crm_fucntion
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">name,</if>
+            <if test="url != null  and url != ''">url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="url != null  and url != ''">#{url},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFucntion" parameterType="Fucntion">
+        update crm_fucntion
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="url != null  and url != ''">url = #{url},</if>
+        </trim>
+        where fucntion_id = #{fucntionId}
+    </update>
+
+    <delete id="deleteFucntionById" parameterType="Long">
+        delete from crm_fucntion where fucntion_id = #{fucntionId}
+    </delete>
+
+    <delete id="deleteFucntionByIds" parameterType="String">
+        delete from crm_fucntion where fucntion_id in 
+        <foreach item="fucntionId" collection="array" open="(" separator="," close=")">
+            #{fucntionId}
+        </foreach>
+    </delete>
+    
+</mapper>

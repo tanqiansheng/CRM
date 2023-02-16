@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.crm.contacts.mapper.ContactsMapper">
+    
+    <resultMap type="Contacts" id="ContactsResult">
+        <result property="contactsId"    column="contacts_id"    />
+        <result property="cid"    column="cid"    />
+        <result property="busId"    column="bus_id"    />
+        <result property="name"    column="name"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="post"    column="post"    />
+        <result property="department"    column="department"    />
+        <result property="sex"    column="sex"    />
+        <result property="saltName"    column="salt_name"    />
+        <result property="mobilePhone1"    column="mobile_phone1"    />
+        <result property="mobilePhone2"    column="mobile_phone2"    />
+        <result property="workPhone"    column="work_phone"    />
+        <result property="wx"    column="wx"    />
+        <result property="qq"    column="qq"    />
+        <result property="email"    column="email"    />
+        <result property="address"    column="address"    />
+        <result property="zipCode"    column="zip_code"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="description"    column="description"    />
+    </resultMap>
+
+    <sql id="selectContactsVo">
+        select contacts_id, cid, bus_id, name, birthday, post, department, sex, salt_name, mobile_phone1, mobile_phone2, work_phone, wx, qq, email, address, zip_code, create_time, update_time, description from crm_contacts
+    </sql>
+
+    <select id="selectContactsList" parameterType="Contacts" resultMap="ContactsResult">
+        <include refid="selectContactsVo"/>
+        <where>
+            <if test="cid != null "> and cid = #{cid}</if>
+            <if test="busId != null "> and bus_id = #{busId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="birthday != null "> and birthday = #{birthday}</if>
+            <if test="post != null  and post != ''"> and post = #{post}</if>
+            <if test="department != null  and department != ''"> and department = #{department}</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="saltName != null  and saltName != ''"> and salt_name like concat('%', #{saltName}, '%')</if>
+            <if test="mobilePhone1 != null  and mobilePhone1 != ''"> and mobile_phone1 = #{mobilePhone1}</if>
+            <if test="mobilePhone2 != null  and mobilePhone2 != ''"> and mobile_phone2 = #{mobilePhone2}</if>
+            <if test="workPhone != null  and workPhone != ''"> and work_phone = #{workPhone}</if>
+            <if test="wx != null  and wx != ''"> and wx = #{wx}</if>
+            <if test="qq != null  and qq != ''"> and qq = #{qq}</if>
+            <if test="email != null  and email != ''"> and email = #{email}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="zipCode != null  and zipCode != ''"> and zip_code = #{zipCode}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+
+            <if test="params.beginBirthday != null and params.beginBirthday != ''"><!-- 开始时间检索 -->
+                AND date_format(birthday,'%y%m%d') &gt;= date_format(#{params.beginBirthday},'%y%m%d')
+            </if>
+            <if test="params.endBirthday != null and params.endBirthday != ''"><!-- 结束时间检索 -->
+                AND date_format(birthday,'%y%m%d') &lt;= date_format(#{params.endBirthday},'%y%m%d')
+            </if>
+        </where>
+
+    </select>
+    
+    <select id="selectContactsById" parameterType="Long" resultMap="ContactsResult">
+        <include refid="selectContactsVo"/>
+        where contacts_id = #{contactsId}
+    </select>
+        
+    <insert id="insertContacts" parameterType="Contacts" useGeneratedKeys="true" keyProperty="contactsId">
+        insert into crm_contacts
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cid != null ">cid,</if>
+            <if test="busId != null ">bus_id,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="birthday != null ">birthday,</if>
+            <if test="post != null  and post != ''">post,</if>
+            <if test="department != null  and department != ''">department,</if>
+            <if test="sex != null  and sex != ''">sex,</if>
+            <if test="saltName != null  and saltName != ''">salt_name,</if>
+            <if test="mobilePhone1 != null  and mobilePhone1 != ''">mobile_phone1,</if>
+            <if test="mobilePhone2 != null  and mobilePhone2 != ''">mobile_phone2,</if>
+            <if test="workPhone != null  and workPhone != ''">work_phone,</if>
+            <if test="wx != null  and wx != ''">wx,</if>
+            <if test="qq != null  and qq != ''">qq,</if>
+            <if test="email != null  and email != ''">email,</if>
+            <if test="address != null  and address != ''">address,</if>
+            <if test="zipCode != null  and zipCode != ''">zip_code,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="description != null  and description != ''">description,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cid != null ">#{cid},</if>
+            <if test="busId != null ">#{busId},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="birthday != null ">#{birthday},</if>
+            <if test="post != null  and post != ''">#{post},</if>
+            <if test="department != null  and department != ''">#{department},</if>
+            <if test="sex != null  and sex != ''">#{sex},</if>
+            <if test="saltName != null  and saltName != ''">#{saltName},</if>
+            <if test="mobilePhone1 != null  and mobilePhone1 != ''">#{mobilePhone1},</if>
+            <if test="mobilePhone2 != null  and mobilePhone2 != ''">#{mobilePhone2},</if>
+            <if test="workPhone != null  and workPhone != ''">#{workPhone},</if>
+            <if test="wx != null  and wx != ''">#{wx},</if>
+            <if test="qq != null  and qq != ''">#{qq},</if>
+            <if test="email != null  and email != ''">#{email},</if>
+            <if test="address != null  and address != ''">#{address},</if>
+            <if test="zipCode != null  and zipCode != ''">#{zipCode},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="description != null  and description != ''">#{description},</if>
+         </trim>
+    </insert>
+
+    <update id="updateContacts" parameterType="Contacts">
+        update crm_contacts
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cid != null ">cid = #{cid},</if>
+            <if test="busId != null ">bus_id = #{busId},</if>
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="birthday != null ">birthday = #{birthday},</if>
+            <if test="post != null  and post != ''">post = #{post},</if>
+            <if test="department != null  and department != ''">department = #{department},</if>
+            <if test="sex != null  and sex != ''">sex = #{sex},</if>
+            <if test="saltName != null  and saltName != ''">salt_name = #{saltName},</if>
+            <if test="mobilePhone1 != null  and mobilePhone1 != ''">mobile_phone1 = #{mobilePhone1},</if>
+            <if test="mobilePhone2 != null  and mobilePhone2 != ''">mobile_phone2 = #{mobilePhone2},</if>
+            <if test="workPhone != null  and workPhone != ''">work_phone = #{workPhone},</if>
+            <if test="wx != null  and wx != ''">wx = #{wx},</if>
+            <if test="qq != null  and qq != ''">qq = #{qq},</if>
+            <if test="email != null  and email != ''">email = #{email},</if>
+            <if test="address != null  and address != ''">address = #{address},</if>
+            <if test="zipCode != null  and zipCode != ''">zip_code = #{zipCode},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="description != null  and description != ''">description = #{description},</if>
+        </trim>
+        where contacts_id = #{contactsId}
+    </update>
+
+    <delete id="deleteContactsById" parameterType="Long">
+        delete from crm_contacts where contacts_id = #{contactsId}
+    </delete>
+
+    <delete id="deleteContactsByIds" parameterType="String">
+        delete from crm_contacts where contacts_id in 
+        <foreach item="contactsId" collection="array" open="(" separator="," close=")">
+            #{contactsId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteContactsByInfo" parameterType="Long">
+        delete from crm_contacts where bus_id = #{bus_id}
+    </delete>
+
+    <delete id="deleteContactsByCust" parameterType="Long">
+        delete from crm_contacts where cid = #{cid}
+    </delete>
+
+    
+</mapper>

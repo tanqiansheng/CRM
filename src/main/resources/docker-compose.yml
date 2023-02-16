@@ -1,0 +1,28 @@
+version: "3.0"
+services:
+  mysql: # mysql服务
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password #解决外部无法访问
+    restart: always
+    ports:
+      - "3306:3306"      #容器端口映射到宿主机的端口
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
+      MYSQL_DATABASE: 'angeltqs'
+      MYSQL_USER: 'angeltqs'
+      MYSQL_PASSWORD: 'angeltqs'
+    networks:
+      - angeltqs_web
+  angeltqs_web: #自己单独的springboot项目
+    hostname: angeltqs
+    build: ./     #需要构建的Dockerfile文件
+    restart: always
+    ports:
+      - "8088:8080"      #容器端口映射到宿主机的端口
+    depends_on:      #web服务依赖mysql服务，要等mysql服务先启动
+      - mysql
+    networks:
+      - angeltqs_web
+networks:  ## 定义服务的桥
+  angeltqs_web:
